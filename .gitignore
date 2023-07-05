@@ -1,0 +1,25 @@
+# Compiled Python files
+*.pyc
+
+
+# Logs
+*.log
+
+# Virtual environment
+venv/
+env/
+*.env
+
+# Install packages
+*.egg-info/
+dist/
+build/
+
+# Pytest cache
+.pytest_cache/
+
+
+# PyCharm
+.idea/
+*.iml
+*.iws
