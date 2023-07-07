@@ -10,14 +10,14 @@ def mostrar_menu():
     print("3. Insertar registro")
     print("4. Eliminar registro")
     print("5. Salir")
-    opcion = input("Seleccione una opcion: ")
+    opcion = input("Seleccione una opción: ")
     return opcion
 
 # Función para seleccionar registros
 def seleccionar_registros():
     conexion = conectar()
     db = conexion.cursor()
-    db.execute("SELECT * FROM personas")
+    db.execute("SELECT * FROM personas WHERE 1=1")
     registros = db.fetchall()
     for registro in registros:
         print(registro)
@@ -33,13 +33,19 @@ def actualizar_registro():
         print(registro) # Se pinta en pantalla los registros existentes para poder elegir cual actualizar
     
     id = input("Ingrese el ID del registro a actualizar: ")
-    nombre = input("Ingrese el nuevo valor para el nombre: ")
-    edad = input("Ingrese el nuevo valor para la edad: ")
-    curp = input("Ingrese el nuevo valor para el CURP: ")
-    db.execute("UPDATE personas SET nombre = %s, edad = %s, curp = %s WHERE id = %s", (nombre, edad, curp, id))
-    conexion.commit()
-    print("Registro actualizado exitosamente.")
-    conexion.close()
+    
+    row = validar_id(id)
+    
+    if row == 1:
+        nombre = input("Ingrese el nuevo valor para el nombre: ")
+        edad = input("Ingrese el nuevo valor para la edad: ")
+        curp = input("Ingrese el nuevo valor para el CURP: ")
+        db.execute("UPDATE personas SET nombre = %s, edad = %s, curp = %s WHERE id = %s", (nombre, edad, curp, id))
+        conexion.commit()
+        print("Registro actualizado exitosamente.")
+        conexion.close()
+    else:
+        print("El ID no existe en la base de datos.")
 
 # Función para insertar un registro
 def insertar_registro():
@@ -63,10 +69,32 @@ def eliminar_registro():
         print(registro) # Se pinta en pantalla los registros existentes para poder elegir cual eliminar
 
     id = input("Ingrese el ID del registro a eliminar: ")
-    db.execute("DELETE FROM personas WHERE id = %s", (id,))
-    conexion.commit()
-    print("Registro eliminado exitosamente.")
-    conexion.close()
+    
+    row = validar_id(id)
+
+    if row == 1:
+        db.execute("DELETE FROM personas WHERE id = %s", (id,))
+        conexion.commit()
+        print("Registro eliminado exitosamente.")
+        conexion.close()
+    else:
+        print("El ID no existe en la base de datos.")
+
+# Función para validar ID existente
+def validar_id(id):
+    conexion = conectar()
+    db = conexion.cursor()
+
+    query = "SELECT * FROM personas WHERE id = %s"
+    db.execute(query, (id,))
+
+    # Obtener el resultado de la consulta
+    result = db.fetchone()
+
+    if result:
+        return 1
+    else:
+        return 0
 
 # Función principal para ejecutar el programa
 def ejecutar_programa():
@@ -82,10 +110,10 @@ def ejecutar_programa():
         elif opcion == "4":
             eliminar_registro()
         elif opcion == "5":
-            print("Hasta luego!")
+            print("\nHasta luego!\n")
             break
         else:
-            print("Opcion invalida. Por favor, seleccione otra opcion.")
+            print("Opción invalida. Por favor, seleccione otra opción.")
 
 # Ejecutar el programa
 ejecutar_programa()
